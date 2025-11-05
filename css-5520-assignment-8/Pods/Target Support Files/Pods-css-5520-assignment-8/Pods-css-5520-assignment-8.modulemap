@@ -1,0 +1,6 @@
+framework module Pods_css_5520_assignment_8 {
+  umbrella header "Pods-css-5520-assignment-8-umbrella.h"
+
+  export *
+  module * { export * }
+}

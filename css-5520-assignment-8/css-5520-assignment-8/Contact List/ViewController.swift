@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class ViewController: UIViewController {
     
     let createContactListScreenView = ContactListView()
     var contactList = [String]()
     let notificationCenter = NotificationCenter.default
+    let db = Firestore.firestore()
     
     override func loadView() {
         view = createContactListScreenView
@@ -26,19 +29,35 @@ class ViewController: UIViewController {
 //        notesList.append(note1)
 //        notesList.append(note2)
         
-        let addButton = UIBarButtonItem(
-            barButtonSystemItem: .add, target: self, action: #selector(onAddButtonTapped)
-        )
-        navigationItem.rightBarButtonItem = addButton
-        notificationCenter.addObserver(self,
-            selector: #selector(notificationReceivedForNotesUpdate(notification:)), name: Notification.Name("notesUpdate"), object: nil)
         createContactListScreenView.tableViewNotes.delegate = self
         createContactListScreenView.tableViewNotes.dataSource = self
         createContactListScreenView.tableViewNotes.separatorStyle = .none
         
-        createContactListScreenView.tableViewNotes.reloadData()
-        let registerController = RegisterViewController()
-        navigationController?.pushViewController(registerController, animated: true)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onAddButtonTapped))
+        
+        fetchContacts()
+    }
+    
+    func fetchContacts() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("User").whereField("userId",isNotEqualTo: currentUserId).getDocuments {QuerySnapshot, error in
+            if let error = error {
+                print("Failing to fetch users: \(error)")
+                return
+            }
+            self.contactList.removeAll()
+            if let documents = QuerySnapshot?.documents {
+                for doc in documents {
+                    if let name = doc.data()["name"] as? String {
+                        self.contactList.append(name)
+                    }
+                }
+            }
+            DispatchQueue.main.async {
+                self.createContactListScreenView.tableViewNotes.reloadData()
+            }
+        }
     }
     
     @objc func onAddButtonTapped() {
@@ -47,11 +66,6 @@ class ViewController: UIViewController {
 //        ler = AddNotesViewController()
 //        navigationController?.pushViewController(addNotesController, animated: true)
     }
-    
-    @objc func notificationReceivedForNotesUpdate(notification: Notification) {
-        
-    }
-    
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
@@ -66,6 +80,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        let vC = ChatViewController()
+        navigationController?.pushViewController(vC, animated: true)
     }
 }
