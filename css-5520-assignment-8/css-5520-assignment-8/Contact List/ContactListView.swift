@@ -29,7 +29,7 @@ class ContactListView: UIView {
     
     func setupTableViewNotes() {
         tableViewNotes = UITableView()
-        tableViewNotes.register(TableViewContactCell.self, forCellReuseIdentifier: "notes")
+        tableViewNotes.register(TableViewContactCell.self, forCellReuseIdentifier: "contacts")
         tableViewNotes.translatesAutoresizingMaskIntoConstraints = false
         tableViewNotes.clipsToBounds = true
         self.addSubview(tableViewNotes)

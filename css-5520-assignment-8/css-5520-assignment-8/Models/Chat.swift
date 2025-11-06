@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+struct Chat{
+     var chatSessionId: String?
+     var name: String?
+     var participantEmailIds: [String]?
+     var lastMessage: String?
+     var lastMessageTime: String?
+}
