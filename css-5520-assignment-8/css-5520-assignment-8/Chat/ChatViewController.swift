@@ -6,7 +6,7 @@ class ChatViewController: UIViewController {
     
     var createChatScreenView = ChatView()
     var messages = [Message]()
-    var chatId: String = "sampleChatId" // Assign dynamically based on chat selection
+    var chatSessionId: String = "" // Assign dynamically based on chat selection
     
     let db = Firestore.firestore()
     var userId: String?
@@ -19,7 +19,7 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        userId = Auth.auth().currentUser?.uid
+        userId = Auth.auth().currentUser?.email
         userName = Auth.auth().currentUser?.displayName ?? Auth.auth().currentUser?.email
         
         createChatScreenView.tableView.delegate = self
@@ -32,7 +32,7 @@ class ChatViewController: UIViewController {
     }
     
     func startListeningMessages() {
-        db.collection("chats").document(chatId).collection("messages")
+        db.collection("chatSessions").document(chatSessionId).collection("messages")
             .order(by: "timestamp", descending: false)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
@@ -40,6 +40,7 @@ class ChatViewController: UIViewController {
                     print("Failed to listen for messages: \(error)")
                     return
                 }
+                print(messages)
                 self.messages.removeAll()
                 if let documents = querySnapshot?.documents {
                     for doc in documents {
@@ -47,11 +48,13 @@ class ChatViewController: UIViewController {
                         self.messages.append(message)
                     }
                 }
+                print("After")
+                print(messages)
                 DispatchQueue.main.async {
                     self.createChatScreenView.tableView.reloadData()
                     if self.messages.count > 0 {
                         let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
-                        self.createChatScreenView.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+//                        self.createChatScreenView.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                     }
                 }
             }
@@ -63,7 +66,7 @@ class ChatViewController: UIViewController {
               let userName = userName else { return }
         
         let message = Message(senderId: userId, senderName: userName, text: text, timestamp: Date())
-        db.collection("chats").document(chatId).collection("messages")
+        db.collection("chatSessions").document(chatSessionId).collection("messages")
             .addDocument(data: message.toDictionary()) { error in
                 if let error = error {
                     print("Error sending message: \(error)")
@@ -92,7 +95,7 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
         
         let dateStr = Helper.formatDate(message.timestamp)
         
-        var displayText = "\(message.senderName)\n\(message.text)\n\(dateStr)"
+        let displayText = "\(message.senderName)\n\(message.text)\n\(dateStr)"
         cell.textLabel?.text = displayText
         cell.textLabel?.textAlignment = isCurrentUser ? .right : .left
         

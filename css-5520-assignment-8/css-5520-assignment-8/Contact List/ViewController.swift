@@ -12,7 +12,7 @@ import FirebaseFirestore
 class ViewController: UIViewController {
     
     let createContactListScreenView = ContactListView()
-    var contactList = [String]()
+    var contactList = [Chat]()
     let notificationCenter = NotificationCenter.default
     let db = Firestore.firestore()
     
@@ -39,32 +39,50 @@ class ViewController: UIViewController {
     }
     
     func fetchContacts() {
-        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let currentUserEmailId = Auth.auth().currentUser?.email else { return }
         
-        db.collection("User").whereField("userId",isNotEqualTo: currentUserId).getDocuments {QuerySnapshot, error in
-            if let error = error {
-                print("Failing to fetch users: \(error)")
-                return
-            }
-            self.contactList.removeAll()
-            if let documents = QuerySnapshot?.documents {
-                for doc in documents {
-                    if let name = doc.data()["name"] as? String {
-                        self.contactList.append(name)
+        print(currentUserEmailId)
+        let chatService = ChatService()
+        chatService.getUserChatSessions(userEmailId: currentUserEmailId) {
+            sessions in
+            for session in sessions {
+                if let participants = session.participants {
+                    
+                    var chatGroupName = ""
+                    for participant in participants{
+                        print(participant["userId"])
+                        let participantEmailId = participant["userId"] ?? ""
+                        if  participantEmailId != currentUserEmailId {
+                            if (chatGroupName.isEmpty) {
+                                chatGroupName.append(participant["userName"] ?? "")
+                            } else {
+                                chatGroupName.append(", \(participant["userName"] ?? "")")
+                            }
+                        }
                     }
+                    print(chatGroupName)
+                    var chat = Chat()
+                    chat.name = chatGroupName
+                    chat.lastMessage = session.lastMessage ?? ""
+                    chat.chatSessionId = session.id ?? ""
+                    if let timestamp = session.lastMessageTime {
+                        let date = timestamp.dateValue()
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "MM/dd/yyyy"
+                        chat.lastMessageTime = formatter.string(from: date)
+                    }
+                    self.contactList.append(chat)
                 }
+                print("Last Message: \(session.lastMessage)")
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.async{
                 self.createContactListScreenView.tableViewNotes.reloadData()
             }
         }
     }
     
     @objc func onAddButtonTapped() {
-//        let addNotesControl
         
-//        ler = AddNotesViewController()
-//        navigationController?.pushViewController(addNotesController, animated: true)
     }
 }
 
@@ -75,12 +93,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "contacts", for: indexPath) as! TableViewContactCell
-        cell.labelNotes.text = contactList[indexPath.row]
+        cell.labelChatName.text = contactList[indexPath.row].name
+        cell.labelLastMessage.text = contactList[indexPath.row].lastMessage
+        cell.labelLastMessageTime.text = contactList[indexPath.row].lastMessageTime
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vC = ChatViewController()
+        vC.chatSessionId = contactList[indexPath.row].chatSessionId ?? ""
         navigationController?.pushViewController(vC, animated: true)
     }
 }
