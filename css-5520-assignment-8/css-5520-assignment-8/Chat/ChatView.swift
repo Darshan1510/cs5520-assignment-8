@@ -11,6 +11,8 @@ class ChatView: UIView {
     var tableView: UITableView!
     var messageInputField: UITextField!
     var sendButton: UIButton!
+    
+    var messageInputBottomConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,6 +35,7 @@ class ChatView: UIView {
         messageInputField.borderStyle = .roundedRect
         messageInputField.placeholder = "Type a message"
         messageInputField.translatesAutoresizingMaskIntoConstraints = false
+        messageInputBottomConstraint = messageInputField.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         addSubview(messageInputField)
     }
 
@@ -49,7 +52,7 @@ class ChatView: UIView {
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-            messageInputField.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 8),
+            messageInputBottomConstraint,
             messageInputField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             messageInputField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -8),
 
