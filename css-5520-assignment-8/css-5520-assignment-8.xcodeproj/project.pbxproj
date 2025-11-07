@@ -37,6 +37,9 @@
 		716C05822EBBCF37004D6F6C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716C05812EBBCF37004D6F6C /* User.swift */; };
 		716C05842EBBCF76004D6F6C /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716C05832EBBCF76004D6F6C /* Message.swift */; };
 		716C05862EBBD23D004D6F6C /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716C05852EBBD23D004D6F6C /* Helper.swift */; };
+		71FEDC1B2EBD6D2700294731 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEDC1A2EBD6D2200294731 /* AddFriendView.swift */; };
+		71FEDC1D2EBD6D3300294731 /* AddFriendController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEDC1C2EBD6D2B00294731 /* AddFriendController.swift */; };
+		71FEDC212EBDA7F900294731 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEDC202EBDA7F900294731 /* ChatMessageCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +66,9 @@
 		716C05812EBBCF37004D6F6C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = User.swift; path = "css-5520-assignment-8/Models/User.swift"; sourceTree = SOURCE_ROOT; };
 		716C05832EBBCF76004D6F6C /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "css-5520-assignment-8/Models/Message.swift"; sourceTree = SOURCE_ROOT; };
 		716C05852EBBD23D004D6F6C /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Helper.swift; path = "css-5520-assignment-8/Utilities/Helper.swift"; sourceTree = SOURCE_ROOT; };
+		71FEDC1A2EBD6D2200294731 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
+		71FEDC1C2EBD6D2B00294731 /* AddFriendController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendController.swift; sourceTree = "<group>"; };
+		71FEDC202EBDA7F900294731 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +124,7 @@
 				3F6999282EB71C05004BBB29 /* Assets.xcassets */,
 				3F69992A2EB71C05004BBB29 /* LaunchScreen.storyboard */,
 				3F69992D2EB71C05004BBB29 /* Info.plist */,
+				71FEDC192EBD6D1000294731 /* Add Friend */,
 			);
 			path = "css-5520-assignment-8";
 			sourceTree = "<group>";
@@ -155,6 +162,7 @@
 			children = (
 				3F69993E2EB71DC4004BBB29 /* ChatViewController.swift */,
 				3F6999452EB71E1C004BBB29 /* ChatView.swift */,
+				71FEDC202EBDA7F900294731 /* ChatMessageCell.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -184,6 +192,15 @@
 				3F7962A12EBC771B00CE1393 /* ChatService.swift */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		71FEDC192EBD6D1000294731 /* Add Friend */ = {
+			isa = PBXGroup;
+			children = (
+				71FEDC1C2EBD6D2B00294731 /* AddFriendController.swift */,
+				71FEDC1A2EBD6D2200294731 /* AddFriendView.swift */,
+			);
+			path = "Add Friend";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,10 +291,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F6999242EB71C03004BBB29 /* ViewController.swift in Sources */,
+				71FEDC212EBDA7F900294731 /* ChatMessageCell.swift in Sources */,
 				716C05862EBBD23D004D6F6C /* Helper.swift in Sources */,
 				3F7962A42EBC8D0A00CE1393 /* Chat.swift in Sources */,
 				3F79629F2EBC768400CE1393 /* ChatSession.swift in Sources */,
 				3F69994C2EB71E4D004BBB29 /* RegisterView.swift in Sources */,
+				71FEDC1D2EBD6D3300294731 /* AddFriendController.swift in Sources */,
 				3F69994E2EB71EFA004BBB29 /* TableViewContactCell.swift in Sources */,
 				3F6999202EB71C03004BBB29 /* AppDelegate.swift in Sources */,
 				3F69993F2EB71DC4004BBB29 /* ChatViewController.swift in Sources */,
@@ -287,6 +306,7 @@
 				716C05822EBBCF37004D6F6C /* User.swift in Sources */,
 				716C05842EBBCF76004D6F6C /* Message.swift in Sources */,
 				3F6999462EB71E1C004BBB29 /* ChatView.swift in Sources */,
+				71FEDC1B2EBD6D2700294731 /* AddFriendView.swift in Sources */,
 				3F7962A22EBC771B00CE1393 /* ChatService.swift in Sources */,
 				3F6999422EB71DF3004BBB29 /* LoginViewController.swift in Sources */,
 				3F6999222EB71C03004BBB29 /* SceneDelegate.swift in Sources */,

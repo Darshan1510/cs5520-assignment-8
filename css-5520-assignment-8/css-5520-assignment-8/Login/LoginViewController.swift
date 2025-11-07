@@ -45,10 +45,11 @@ class LoginViewController: UIViewController {
             if let error = error {
                 Helper.showAlert(on: self, title: "Error", message: error.localizedDescription)
                 return
-            }
-            DispatchQueue.main.async {
-                let VC = ViewController()
-                self.navigationController?.pushViewController(VC, animated: true)
+            } else {
+                DispatchQueue.main.async {
+                    let VC = ViewController()
+                    self.navigationController?.pushViewController(VC, animated: true)
+                }
             }
         }
     }

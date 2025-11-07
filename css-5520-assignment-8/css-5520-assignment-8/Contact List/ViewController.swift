@@ -28,7 +28,15 @@ class ViewController: UIViewController {
 //        var note2 = Notes(_id: "secure1", text: "Smaller text should not be affected")
 //        notesList.append(note1)
 //        notesList.append(note2)
-        
+//        do{
+//            try Auth.auth().signOut()
+//        } catch {
+//            
+//        }
+        if let user = Auth.auth().currentUser {print(user.email)}
+        else {
+            navigationController?.pushViewController(LoginViewController(), animated: true)
+        }
         createContactListScreenView.tableViewNotes.delegate = self
         createContactListScreenView.tableViewNotes.dataSource = self
         createContactListScreenView.tableViewNotes.separatorStyle = .none
@@ -82,7 +90,9 @@ class ViewController: UIViewController {
     }
     
     @objc func onAddButtonTapped() {
-        
+        let addVC = AddFriendController()
+            addVC.completion = { [weak self] in self?.fetchContacts() }
+            navigationController?.pushViewController(addVC, animated: true)
     }
 }
 

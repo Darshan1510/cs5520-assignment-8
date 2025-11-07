@@ -8,33 +8,26 @@
 import UIKit
 
 class ChatView: UIView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
     var tableView: UITableView!
     var messageInputField: UITextField!
     var sendButton: UIButton!
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .systemBackground
         setUpTableView()
         setUpMessageInputField()
         setUpSendButton()
-        intiConstraints()
+        initConstraints()
     }
-    
+
     func setUpTableView() {
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(ChatMessageCell.self, forCellReuseIdentifier: "messageCell")
         addSubview(tableView)
     }
-    
+
     func setUpMessageInputField() {
         messageInputField = UITextField()
         messageInputField.borderStyle = .roundedRect
@@ -42,34 +35,33 @@ class ChatView: UIView {
         messageInputField.translatesAutoresizingMaskIntoConstraints = false
         addSubview(messageInputField)
     }
-    
+
     func setUpSendButton() {
         sendButton = UIButton(type: .system)
-        sendButton.setTitle("send", for: .normal)
+        sendButton.setTitle("Send", for: .normal)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(sendButton)
     }
-    
-    func intiConstraints() {
+
+    func initConstraints() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            
+
             messageInputField.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 8),
             messageInputField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            messageInputField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: -8),
-            
-            sendButton.leadingAnchor.constraint(equalTo: messageInputField.trailingAnchor, constant: 8),
+            messageInputField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -8),
+
             sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             sendButton.centerYAnchor.constraint(equalTo: messageInputField.centerYAnchor),
             sendButton.widthAnchor.constraint(equalToConstant: 60),
-            
+
             messageInputField.heightAnchor.constraint(equalToConstant: 40),
             tableView.bottomAnchor.constraint(equalTo: messageInputField.topAnchor, constant: -8)
         ])
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

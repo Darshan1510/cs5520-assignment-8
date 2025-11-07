@@ -12,7 +12,6 @@ class LoginView: UIView {
     var cardView: UIView!
     
     var loginAccountLabel: UILabel!
-    var userNameField: UITextField!
     var userEmailField: UITextField!
     var userPasswordField: UITextField!
     
@@ -27,7 +26,6 @@ class LoginView: UIView {
 
         setUpCreateProfileLabel()
         setupCardView()
-        setupUserNameField()
         setupUserEmailField()
         setupUserPasswordField()
         setupSignUpButton()
@@ -56,18 +54,6 @@ class LoginView: UIView {
         cardView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(cardView)
     }
-
-    
-    func setupUserNameField() {
-        userNameField = UITextField()
-        userNameField.placeholder = "Sagar Bilwal"
-        userNameField.layer.cornerRadius = 0
-        userNameField.backgroundColor = UIColor.systemGray6
-        userNameField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        userNameField.leftView = leftPaddingView(userNameField)
-        userNameField.leftViewMode = .always
-        userNameField.translatesAutoresizingMaskIntoConstraints = false
-    }
     
     func setupUserEmailField() {
         userEmailField = UITextField()
@@ -75,7 +61,7 @@ class LoginView: UIView {
         userEmailField.layer.cornerRadius = 0
         userEmailField.backgroundColor = UIColor.systemGray6
         userEmailField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        userEmailField.leftView = leftPaddingView(userNameField)
+        userEmailField.leftView = leftPaddingView(userEmailField)
         userEmailField.leftViewMode = .always
         userEmailField.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -87,7 +73,7 @@ class LoginView: UIView {
         userPasswordField.layer.cornerRadius = 0
         userPasswordField.backgroundColor = UIColor.systemGray6
         userPasswordField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        userPasswordField.leftView = leftPaddingView(userNameField)
+        userPasswordField.leftView = leftPaddingView(userPasswordField)
         userPasswordField.leftViewMode = .always
         userPasswordField.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -112,7 +98,6 @@ class LoginView: UIView {
     func setupCardStack() {
         // found using google
         cardStack = UIStackView( arrangedSubviews: [
-            createLabel("Full Name"), userNameField,
             createLabel("Email Id"), userEmailField,
             createLabel("Password"), userPasswordField,
             signUpButton,
