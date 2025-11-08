@@ -97,12 +97,30 @@ class ChatViewController: UIViewController {
         guard let text = createChatScreenView.messageInputField.text, !text.isEmpty,
               let userId = userId,
               let userName = userName else { return }
+        
         let message = Message(senderId: userId, senderName: userName, text: text, timestamp: Date())
-        db.collection("chatSessions").document(chatSessionId).collection("messages")
-            .addDocument(data: message.toDictionary()) { error in
-                if let error = error { print("Error sending message: \(error)") }
-                else { DispatchQueue.main.async { self.createChatScreenView.messageInputField.text = "" } }
+        
+        let chatSessionRef = db.collection("chatSessions").document(chatSessionId)
+        let messageRef = chatSessionRef.collection("messages").document()
+        
+        let batch = db.batch()
+        
+        batch.setData(message.toDictionary(), forDocument: messageRef)
+        
+        batch.updateData([
+            "lastMessage": text,
+            "lastMessageTime": message.timestamp
+        ], forDocument: chatSessionRef)
+        
+        batch.commit{ error in
+            if let error = error {
+                print("Error occured in \(error)")
+            } else {
+                DispatchQueue.main.async {
+                    self.createChatScreenView.messageInputField.text = ""
+                }
             }
+        }
     }
 
     @objc func logOutTapped() {

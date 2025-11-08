@@ -7,10 +7,11 @@
 
 import UIKit
 import FirebaseAuth
-
+import FirebaseFirestore
 class RegisterViewController: UIViewController {
 
     let createRegisterScreenView = RegisterView()
+    let db = Firestore.firestore()
     
     override func loadView() {
         view = createRegisterScreenView
@@ -68,9 +69,18 @@ class RegisterViewController: UIViewController {
                     Helper.showAlert(on: self, title: "Can't Update Profile", message: error.localizedDescription)
                     return
                 }
-                DispatchQueue.main.async {
-                    Helper.showAlert(on: self, title: "Success", message: "Registration Successful. Please Try to Login !!")
-                }
+                
+                let user = User(userId: user.uid ?? "", name: user.displayName ?? "", email: user.email ?? "", createdAt: Date())
+                
+                self.db.collection("users").addDocument(data: user.toDictionary()) { error in
+                                if let error = error {
+                                    print("Error sending message: \(error)")
+                                } else {
+                                    DispatchQueue.main.async {
+                                        Helper.showAlert(on: self, title: "Success", message: "Registration Successful. Please Try to Login !!")
+                                    }
+                                }
+                            }
             }
         }
     }
