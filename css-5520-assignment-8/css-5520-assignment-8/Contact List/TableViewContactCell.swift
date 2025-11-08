@@ -11,15 +11,16 @@ class TableViewContactCell: UITableViewCell {
     
     var wrapperCellView: UIView!
     var labelChatName: UILabel!
-    var labelLastMessage: UILabel!
-    var labelLastMessageTime: UILabel!
+//    var labelLastMessage: UILabel!
+//    var labelLastMessageTime: UILabel!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupWrapperCellView()
         setupLabelNotes()
-        setupLabelLastMessage()
-        setupLabelLastMessageTime()
+//        setupLabelLastMessage()
+//        setupLabelLastMessageTime()
+        
         initContraints()
     }
     
@@ -43,23 +44,23 @@ class TableViewContactCell: UITableViewCell {
         wrapperCellView.addSubview(labelChatName)
     }
     
-    func setupLabelLastMessage() {
-        labelLastMessage = UILabel()
-        labelLastMessage.font = UIFont.systemFont(ofSize: 14)
-        labelLastMessage.numberOfLines = 3
-        labelLastMessage.lineBreakMode = .byTruncatingTail
-        labelLastMessage.translatesAutoresizingMaskIntoConstraints = false
-        wrapperCellView.addSubview(labelLastMessage)
-    }
-    
-    func setupLabelLastMessageTime() {
-        labelLastMessageTime = UILabel()
-        labelLastMessageTime.font = UIFont.boldSystemFont(ofSize: 11)
-        labelLastMessageTime.numberOfLines = 3
-        labelLastMessageTime.lineBreakMode = .byTruncatingTail
-        labelLastMessageTime.translatesAutoresizingMaskIntoConstraints = false
-        wrapperCellView.addSubview(labelLastMessageTime)
-    }
+//    func setupLabelLastMessage() {
+//        labelLastMessage = UILabel()
+//        labelLastMessage.font = UIFont.systemFont(ofSize: 14)
+//        labelLastMessage.numberOfLines = 1
+//        labelLastMessage.lineBreakMode = .byTruncatingTail
+//        labelLastMessage.translatesAutoresizingMaskIntoConstraints = false
+//        wrapperCellView.addSubview(labelLastMessage)
+//    }
+//        
+//    func setupLabelLastMessageTime() {
+//        labelLastMessageTime = UILabel()
+//        labelLastMessageTime.font = UIFont.boldSystemFont(ofSize: 11)
+//        labelLastMessageTime.numberOfLines = 1
+//        labelLastMessageTime.lineBreakMode = .byTruncatingTail
+//        labelLastMessageTime.translatesAutoresizingMaskIntoConstraints = false
+//        wrapperCellView.addSubview(labelLastMessageTime)
+//    }
     
     func initContraints() {
         NSLayoutConstraint.activate([
@@ -71,15 +72,17 @@ class TableViewContactCell: UITableViewCell {
             labelChatName.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
             labelChatName.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             labelChatName.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
+            labelChatName.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -10),
+
             
-            labelLastMessage.topAnchor.constraint(equalTo: labelChatName.topAnchor, constant: 25),
-            labelLastMessage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
-            labelLastMessage.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
+//            labelLastMessage.topAnchor.constraint(equalTo: labelChatName.bottomAnchor, constant: 10),
+//            labelLastMessage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
+//            labelLastMessage.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
+//            
+//            labelLastMessageTime.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
+//            labelLastMessageTime.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -10),
             
-            labelLastMessageTime.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
-            labelLastMessageTime.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -10),
-            
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 80)
+            wrapperCellView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     

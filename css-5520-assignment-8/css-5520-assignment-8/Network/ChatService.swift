@@ -11,16 +11,16 @@ class ChatService {
 
      private let db = Firestore.firestore()
  
-    func getUserChatSessions(userEmailId: String, completion: @escaping ([ChatSession]) -> Void) {
+    func getUserChatSessions(userEmailId: String, userId: String, completion: @escaping ([ChatSession]) -> Void) {
 
-        db.collection("users").whereField("email", isEqualTo: userEmailId).limit(to: 1).getDocuments { snapshot, error in
+        db.collection("users").document(userId).addSnapshotListener() { snapshot, error in
              if let error = error {
                  print("Error fetching user: \(error)")
                  completion([])
                  return
              }
-
-            guard let data = snapshot?.documents.first,
+            print("This is getting called")
+            guard let data = snapshot,
                    let sessionIds = data["chatSessions"] as? [String] else {
                  print("No chat sessions found for user")
                  completion([])

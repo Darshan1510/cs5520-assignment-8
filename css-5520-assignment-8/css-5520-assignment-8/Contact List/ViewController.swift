@@ -40,18 +40,18 @@ class ViewController: UIViewController {
         createContactListScreenView.tableViewNotes.delegate = self
         createContactListScreenView.tableViewNotes.dataSource = self
         createContactListScreenView.tableViewNotes.separatorStyle = .none
+        createContactListScreenView.tableViewNotes.focusEffect = .none
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onAddButtonTapped))
-        
         fetchContacts()
     }
     
     func fetchContacts() {
         guard let currentUserEmailId = Auth.auth().currentUser?.email else { return }
-        
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         print(currentUserEmailId)
         let chatService = ChatService()
-        chatService.getUserChatSessions(userEmailId: currentUserEmailId) {
+        chatService.getUserChatSessions(userEmailId: currentUserEmailId, userId: currentUserId) {
             sessions in
             for session in sessions {
                 if let participants = session.participants {
@@ -104,8 +104,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "contacts", for: indexPath) as! TableViewContactCell
         cell.labelChatName.text = contactList[indexPath.row].name
-        cell.labelLastMessage.text = contactList[indexPath.row].lastMessage
-        cell.labelLastMessageTime.text = contactList[indexPath.row].lastMessageTime
+//        cell.labelLastMessage.text = contactList[indexPath.row].lastMessage
+//        cell.labelLastMessageTime.text = contactList[indexPath.row].lastMessageTime
         return cell
     }
     
