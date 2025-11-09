@@ -20,13 +20,21 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         title = "Chat"
         userId = Auth.auth().currentUser?.email
         userName = Auth.auth().currentUser?.displayName ?? userId
-
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+        
         createChatScreenView.tableView.delegate = self
         createChatScreenView.tableView.dataSource = self
         createChatScreenView.tableView.allowsSelection = false
         createChatScreenView.sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
 
         startListeningMessages()
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 
     func startListeningMessages() {

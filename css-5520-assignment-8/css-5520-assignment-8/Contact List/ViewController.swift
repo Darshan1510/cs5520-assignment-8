@@ -33,7 +33,8 @@ class ViewController: UIViewController {
 //        } catch {
 //            
 //        }
-        if let user = Auth.auth().currentUser {print(user.email)}
+        if let user = Auth.auth().currentUser {print(user.email)
+            print("This is at time of main screen: \(user.uid)")}
         else {
             navigationController?.pushViewController(LoginViewController(), animated: true)
         }

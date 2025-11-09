@@ -69,10 +69,14 @@ class RegisterViewController: UIViewController {
                     Helper.showAlert(on: self, title: "Can't Update Profile", message: error.localizedDescription)
                     return
                 }
-                
+                print("The user id at time of register: \(user.uid)")
+                Auth.auth().currentUser?.reload(completion: { _ in
+                         let realUID = Auth.auth().currentUser?.uid
+                         print("Real UID after reload:", realUID ?? "nil")
+                })
                 let user = User(userId: user.uid ?? "", name: user.displayName ?? "", email: user.email ?? "", createdAt: Date())
                 
-                self.db.collection("users").addDocument(data: user.toDictionary()) { error in
+                self.db.collection("users").document(user.userId).setData(user.toDictionary()) { error in
                                 if let error = error {
                                     print("Error sending message: \(error)")
                                 } else {
