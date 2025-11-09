@@ -42,31 +42,58 @@ class AddFriendController: UIViewController {
             }
 
             let friendId = doc.documentID
+            let friendName = (doc.data()["userName"] as? String) ?? friendEmail
+
             if friendId == currentUserId {
                 Helper.showAlert(on: self, title: "Invalid", message: "You cannot chat with yourself.")
                 return
             }
-            let participantIds = [currentUserId, friendId].sorted()
-            db.collection("chatSessions").whereField("participants", isEqualTo: participantIds).getDocuments { (sessionSnapshot, _) in
-                if let sessionDoc = sessionSnapshot?.documents.first {
-                    let sessionId = sessionDoc.documentID
-                    DispatchQueue.main.async {
-                        self.goToChat(sessionId: sessionId)
+
+            let currentUserRef = db.collection("users").document(currentUserId)
+            currentUserRef.getDocument { (myDocSnap, myError) in
+                let myName = myDocSnap?.data()?["userName"] as? String ?? "Me"
+                let sorted: [(String, String)] = [
+                    (currentUserId, myName),
+                    (friendId, friendName)
+                ].sorted { $0.0 < $1.0 }
+                let participantDicts = sorted.map { ["userId": $0.0, "userName": $0.1] }
+
+                // Check for existing session
+                db.collection("chatSessions").getDocuments { (snapshot, _) in
+                    var existingSessionId: String?
+                    for doc in snapshot?.documents ?? [] {
+                        if let session = try? doc.data(as: ChatSession.self),
+                           let participants = session.participants {
+                            let participantIds = participants.compactMap { $0["userId"] }.sorted()
+                            let sortedIds = participantDicts.compactMap { $0["userId"] }
+                            if participantIds == sortedIds {
+                                existingSessionId = doc.documentID
+                                break
+                            }
+                        }
                     }
-                } else {
-                    let newSession: [String: Any] = [
-                        "participants": participantIds,
-                        "createdAt": Timestamp(),
-                        "lastMessage": "",
-                        "lastMessageTime": Timestamp()
-                    ]
-                    var ref: DocumentReference? = nil
-                    ref = db.collection("chatSessions").addDocument(data: newSession) { err in
-                        if let err = err {
-                            Helper.showAlert(on: self, title: "Error", message: err.localizedDescription)
-                        } else if let newDocId = ref?.documentID {
-                            DispatchQueue.main.async {
-                                self.goToChat(sessionId: newDocId)
+
+                    if let sessionId = existingSessionId {
+                        DispatchQueue.main.async {
+                            self.goToChat(sessionId: sessionId)
+                            self.completion?()
+                        }
+                    } else {
+                        let newSession: [String: Any] = [
+                            "participants": participantDicts,
+                            "createdAt": Timestamp(),
+                            "lastMessage": "",
+                            "lastMessageTime": Timestamp()
+                        ]
+                        var ref: DocumentReference?
+                        ref = db.collection("chatSessions").addDocument(data: newSession) { err in
+                            if let err = err {
+                                Helper.showAlert(on: self, title: "Error", message: err.localizedDescription)
+                            } else if let newDocId = ref?.documentID {
+                                DispatchQueue.main.async {
+                                    self.goToChat(sessionId: newDocId)
+                                    self.completion?()
+                                }
                             }
                         }
                     }
@@ -74,7 +101,7 @@ class AddFriendController: UIViewController {
             }
         }
     }
-
+    
     func goToChat(sessionId: String) {
         let chatVC = ChatViewController()
         chatVC.chatSessionId = sessionId

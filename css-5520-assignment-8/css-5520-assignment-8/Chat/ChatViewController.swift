@@ -30,6 +30,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         createChatScreenView.tableView.allowsSelection = false
         createChatScreenView.sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
 
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backTapped))
+        
         startListeningMessages()
     }
     
@@ -37,6 +39,10 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.endEditing(true)
     }
 
+    @objc func backTapped() {
+            navigationController?.popViewController(animated: true)
+        }
+    
     func startListeningMessages() {
         db.collection("chatSessions").document(chatSessionId).collection("messages")
             .order(by: "timestamp", descending: false)
