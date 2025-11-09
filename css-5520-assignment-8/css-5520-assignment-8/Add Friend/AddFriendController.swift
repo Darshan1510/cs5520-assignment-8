@@ -1,16 +1,9 @@
-//
-//  AddFriendController.swift
-//  css-5520-assignment-8
-//
-//  Created by Bhavan Jignesh Trivedi on 11/6/25.
-//
-
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
 class AddFriendController: UIViewController {
-    let addFriendsView = AddFriendView()
+    var addFriendsView = AddFriendView()
     var completion: (() -> Void)?
 
     override func loadView() {
@@ -19,54 +12,72 @@ class AddFriendController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Add Friends"
-        addFriendsView.addMoreButton.addTarget(self, action: #selector(addMoreTapped), for: .touchUpInside)
+        title = "Add Friend"
         addFriendsView.submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
-    }
-
-    @objc func addMoreTapped() {
-        addFriendsView.addEmailField()
     }
 
     @objc func submitTapped() {
         let emails = addFriendsView.getAllEmails().map { $0.lowercased() }
-        guard !emails.isEmpty else {
-            Helper.showAlert(on: self, title: "Input Error", message: "Enter at least one email.")
+        guard emails.count == 1, let friendEmail = emails.first else {
+            Helper.showAlert(on: self, title: "Input Error", message: "Enter exactly one email per chat.")
+            return
+        }
+
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            Helper.showAlert(on: self, title: "Auth Error", message: "User not logged in.")
             return
         }
 
         let db = Firestore.firestore()
-        let usersRef = db.collection("User")
-        let currentUserId = Auth.auth().currentUser?.uid
+        db.collection("users").whereField("email", isEqualTo: friendEmail).getDocuments { [weak self] (snapshot, error) in
+            guard let self = self else { return }
+            if let error = error {
+                Helper.showAlert(on: self, title: "Error", message: error.localizedDescription)
+                return
+            }
 
-        let group = DispatchGroup()
-        var addedEmails = [String]()
-        var notFoundEmails = [String]()
+            guard let doc = snapshot?.documents.first else {
+                Helper.showAlert(on: self, title: "Not Found", message: "No user found with \(friendEmail)")
+                return
+            }
 
-        for email in emails {
-            group.enter()
-            usersRef.whereField("email", isEqualTo: email).getDocuments { snapshot, error in
-                defer { group.leave() }
-                if let doc = snapshot?.documents.first, let friendId = doc.data()["userId"] as? String, let currentUserId = currentUserId {
-                    db.collection("User")
-                        .document(currentUserId)
-                        .collection("Friends")
-                        .document(friendId)
-                        .setData(["userId": friendId, "email": email]) { _ in
-                            addedEmails.append(email)
-                        }
+            let friendId = doc.documentID
+            if friendId == currentUserId {
+                Helper.showAlert(on: self, title: "Invalid", message: "You cannot chat with yourself.")
+                return
+            }
+            let participantIds = [currentUserId, friendId].sorted()
+            db.collection("chatSessions").whereField("participants", isEqualTo: participantIds).getDocuments { (sessionSnapshot, _) in
+                if let sessionDoc = sessionSnapshot?.documents.first {
+                    let sessionId = sessionDoc.documentID
+                    DispatchQueue.main.async {
+                        self.goToChat(sessionId: sessionId)
+                    }
                 } else {
-                    notFoundEmails.append(email)
+                    let newSession: [String: Any] = [
+                        "participants": participantIds,
+                        "createdAt": Timestamp(),
+                        "lastMessage": "",
+                        "lastMessageTime": Timestamp()
+                    ]
+                    var ref: DocumentReference? = nil
+                    ref = db.collection("chatSessions").addDocument(data: newSession) { err in
+                        if let err = err {
+                            Helper.showAlert(on: self, title: "Error", message: err.localizedDescription)
+                        } else if let newDocId = ref?.documentID {
+                            DispatchQueue.main.async {
+                                self.goToChat(sessionId: newDocId)
+                            }
+                        }
+                    }
                 }
             }
         }
-        group.notify(queue: .main) {
-            var message = ""
-            if !addedEmails.isEmpty { message += "Added: " + addedEmails.joined(separator: ", ") + "." }
-            if !notFoundEmails.isEmpty { message += " Not found: " + notFoundEmails.joined(separator: ", ") + "." }
-            Helper.showAlert(on: self, title: "Result", message: message.isEmpty ? "No contacts added." : message)
-            self.completion?()
-            self.navigationController?.popViewController(animated: true)
-        }
+    }
+
+    func goToChat(sessionId: String) {
+        let chatVC = ChatViewController()
+        chatVC.chatSessionId = sessionId
+        navigationController?.pushViewController(chatVC, animated: true)
     }
 }

@@ -9,10 +9,10 @@ import Foundation
 import FirebaseFirestore
 
 struct ChatSession: Identifiable, Codable {
-
-     @DocumentID var id: String?
-     var lastMessage: String?
-     var lastMessageTime: Timestamp?
-     var participants: [[String: String]]?
-     var createdAt: Timestamp?
+    @DocumentID var id: String?
+    var lastMessage: String?
+    var lastMessageTime: Timestamp?
+    var participants: [[String: String]]?
+    var createdAt: Timestamp?
 }
+

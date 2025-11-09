@@ -10,7 +10,6 @@ import UIKit
 class AddFriendView: UIView {
     var instructionLabel: UILabel!
     var stackView: UIStackView!
-    var addMoreButton: UIButton!
     var submitButton: UIButton!
 
     override init(frame: CGRect) {
@@ -18,7 +17,7 @@ class AddFriendView: UIView {
         backgroundColor = .systemBackground
 
         instructionLabel = UILabel()
-        instructionLabel.text = "Enter friend email(s):"
+        instructionLabel.text = "Enter friend email:"
         instructionLabel.numberOfLines = 0
         instructionLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(instructionLabel)
@@ -31,14 +30,6 @@ class AddFriendView: UIView {
 
         // Add initial email field
         stackView.addArrangedSubview(createEmailField())
-
-        addMoreButton = UIButton(type: .system)
-        addMoreButton.setTitle("Add More", for: .normal)
-        addMoreButton.backgroundColor = .systemGray4
-        addMoreButton.setTitleColor(.black, for: .normal)
-        addMoreButton.layer.cornerRadius = 8
-        addMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(addMoreButton)
 
         submitButton = UIButton(type: .system)
         submitButton.setTitle("Submit", for: .normal)
@@ -57,12 +48,7 @@ class AddFriendView: UIView {
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
 
-            addMoreButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 20),
-            addMoreButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            addMoreButton.widthAnchor.constraint(equalToConstant: 120),
-            addMoreButton.heightAnchor.constraint(equalToConstant: 40),
-
-            submitButton.topAnchor.constraint(equalTo: addMoreButton.bottomAnchor, constant: 20),
+            submitButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 20),
             submitButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             submitButton.widthAnchor.constraint(equalToConstant: 160),
             submitButton.heightAnchor.constraint(equalToConstant: 44)

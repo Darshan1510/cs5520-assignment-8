@@ -42,6 +42,8 @@ class ViewController: UIViewController {
         createContactListScreenView.tableViewNotes.separatorStyle = .none
         createContactListScreenView.tableViewNotes.focusEffect = .none
         
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logOutTapped))
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onAddButtonTapped))
         fetchContacts()
     }
@@ -49,26 +51,30 @@ class ViewController: UIViewController {
     func fetchContacts() {
         guard let currentUserEmailId = Auth.auth().currentUser?.email else { return }
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-        print(currentUserEmailId)
-        let chatService = ChatService()
-        chatService.getUserChatSessions(userEmailId: currentUserEmailId, userId: currentUserId) {
-            sessions in
-            for session in sessions {
-                if let participants = session.participants {
-                    
+        contactList.removeAll()
+
+        db.collection("chatSessions").getDocuments { [weak self] (snapshot, error) in
+            guard let self = self else { return }
+            if let error = error {
+                print("Error fetching chat sessions: \(error)")
+                return
+            }
+            guard let documents = snapshot?.documents else { return }
+            for doc in documents {
+                let session = try? doc.data(as: ChatSession.self)
+                if let session = session,
+                   let participants = session.participants,
+                   participants.contains(where: { $0["userId"] == currentUserId }) {
                     var chatGroupName = ""
-                    for participant in participants{
-                        print(participant["userId"])
-                        let participantEmailId = participant["userId"] ?? ""
-                        if  participantEmailId != currentUserEmailId {
-                            if (chatGroupName.isEmpty) {
+                    for participant in participants {
+                        if (participant["userId"] ?? "") != currentUserId {
+                            if chatGroupName.isEmpty {
                                 chatGroupName.append(participant["userName"] ?? "")
                             } else {
                                 chatGroupName.append(", \(participant["userName"] ?? "")")
                             }
                         }
                     }
-                    print(chatGroupName)
                     var chat = Chat()
                     chat.name = chatGroupName
                     chat.lastMessage = session.lastMessage ?? ""
@@ -81,9 +87,8 @@ class ViewController: UIViewController {
                     }
                     self.contactList.append(chat)
                 }
-                print("Last Message: \(session.lastMessage)")
             }
-            DispatchQueue.main.async{
+            DispatchQueue.main.async {
                 self.createContactListScreenView.tableViewNotes.reloadData()
             }
         }
@@ -93,6 +98,21 @@ class ViewController: UIViewController {
         let addVC = AddFriendController()
             addVC.completion = { [weak self] in self?.fetchContacts() }
             navigationController?.pushViewController(addVC, animated: true)
+    }
+    
+    @objc func logOutTapped() {
+        do {
+            try Auth.auth().signOut()
+            let loginVC = LoginViewController()
+            let nav = UINavigationController(rootViewController: loginVC)
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                window.rootViewController = nav
+                window.makeKeyAndVisible()
+            }
+        } catch {
+            Helper.showAlert(on: self, title: "Logout Error", message: error.localizedDescription)
+        }
     }
 }
 
