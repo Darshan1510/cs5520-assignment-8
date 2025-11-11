@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+
 class RegisterViewController: UIViewController {
 
     let createRegisterScreenView = RegisterView()
@@ -71,20 +72,25 @@ class RegisterViewController: UIViewController {
                 }
                 print("The user id at time of register: \(user.uid)")
                 Auth.auth().currentUser?.reload(completion: { _ in
-                         let realUID = Auth.auth().currentUser?.uid
-                         print("Real UID after reload:", realUID ?? "nil")
+                        let realUID = Auth.auth().currentUser?.uid
+                        print("Real UID after reload:", realUID ?? "nil")
                 })
                 let user = User(userId: user.uid ?? "", name: user.displayName ?? "", email: user.email ?? "", createdAt: Date())
                 
                 self.db.collection("users").document(user.userId).setData(user.toDictionary()) { error in
-                                if let error = error {
-                                    print("Error sending message: \(error)")
-                                } else {
-                                    DispatchQueue.main.async {
-                                        Helper.showAlert(on: self, title: "Success", message: "Registration Successful. Please Try to Login !!")
-                                    }
-                                }
-                            }
+                    if let error = error {
+                        print("Error sending message: \(error)")
+                    } else {
+                        DispatchQueue.main.async {
+                            // Native Swift UIAlertController instead of Helper.showAlert with handler
+                            let alert = UIAlertController(title: "Success", message: "Registration Successful. Please Try to Login !", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                                self.navigationController?.popViewController(animated: true)
+                            })
+                            self.present(alert, animated: true)
+                        }
+                    }
+                }
             }
         }
     }
