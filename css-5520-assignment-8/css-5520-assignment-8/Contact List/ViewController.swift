@@ -21,7 +21,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "My Contacts"
+        title = "Chats"
 
         if let user = Auth.auth().currentUser {
             print("User email: \(user.email ?? "N/A")")
@@ -44,10 +44,9 @@ class ViewController: UIViewController {
 
     func fetchContacts() {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-        
-        contactList.removeAll()
 
-        db.collection("chatSessions").getDocuments { [weak self] (snapshot, error) in
+
+        db.collection("chatSessions").addSnapshotListener { [weak self] (snapshot, error) in
             guard let self = self else { return }
             
             if let error = error {
@@ -59,6 +58,8 @@ class ViewController: UIViewController {
                 print("No documents found")
                 return
             }
+            
+            contactList.removeAll()
 
             for doc in documents {
                 guard let session = try? doc.data(as: ChatSession.self),

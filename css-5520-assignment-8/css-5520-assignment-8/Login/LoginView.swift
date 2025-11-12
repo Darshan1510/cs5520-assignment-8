@@ -68,7 +68,7 @@ class LoginView: UIView {
     
     func setupUserPasswordField() {
         userPasswordField = UITextField()
-        userPasswordField.isSecureTextEntry = true
+        //userPasswordField.isSecureTextEntry = true
         userPasswordField.placeholder = "Password"
         userPasswordField.layer.cornerRadius = 0
         userPasswordField.backgroundColor = UIColor.systemGray6

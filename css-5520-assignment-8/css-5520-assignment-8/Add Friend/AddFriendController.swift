@@ -14,7 +14,7 @@ class AddFriendController: UIViewController, UITableViewDataSource, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Select User"
+        title = "Select Friend"
         addFriendsView.tableView.dataSource = self
         addFriendsView.tableView.delegate = self
         addFriendsView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UserCell")
@@ -94,13 +94,14 @@ class AddFriendController: UIViewController, UITableViewDataSource, UITableViewD
                     "lastMessage": "",
                     "lastMessageTime": Timestamp()
                 ]
-                self.db.collection("chatSessions").addDocument(data: newSession) { err in
-                    if let err = err {
-                        print("Error: \(err.localizedDescription)")
-                    } else {
-                        DispatchQueue.main.async {
-                            self.completion?()
-                            self.navigationController?.popViewController(animated: true)
+                let ref = self.db.collection("chatSessions").document()
+                    ref.setData(newSession) { err in
+                        if let err = err {
+                            print("Error: \(err.localizedDescription)")
+                        } else {
+                            DispatchQueue.main.async {
+                                self.goToChat(sessionId: ref.documentID)
+                                self.completion?()
                         }
                     }
                 }
